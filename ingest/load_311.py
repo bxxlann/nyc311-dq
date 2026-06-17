@@ -1,10 +1,4 @@
-"""
-Loads NYC 311 Service Requests into Postgres raw schema via Socrata API.
-Uses offset-based pagination; ~35M rows total, default limit = 500k rows (fast demo).
-"""
-
 import os
-import sys
 import json
 import requests
 import psycopg2
@@ -25,7 +19,6 @@ DB_DSN = (
 SOCRATA_ENDPOINT = "https://data.cityofnewyork.us/resource/erm2-nwe9.json"
 APP_TOKEN = os.getenv("SOCRATA_APP_TOKEN", "")
 
-# Columns we actually care about — keeping raw so nothing is cleaned here
 COLUMNS = [
     "unique_key",
     "created_date",

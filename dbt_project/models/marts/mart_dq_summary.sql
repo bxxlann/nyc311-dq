@@ -1,5 +1,3 @@
--- Aggregate DQ report: one row per flag, showing volume and % affected.
--- This is the table you screenshot for the README / portfolio.
 with flags as (
     select
         count(*)                                                    as total_rows,

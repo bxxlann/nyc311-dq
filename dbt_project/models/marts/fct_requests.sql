@@ -1,5 +1,3 @@
--- Clean fact table: only records that pass all DQ checks.
--- Analysts who need dirty records should query int_requests_cleaned.
 with cleaned as (
     select * from {{ ref('int_requests_cleaned') }}
 ),
