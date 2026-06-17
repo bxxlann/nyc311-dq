@@ -1,0 +1,35 @@
+version: 2
+
+models:
+  - name: fct_requests
+    description: >
+      Clean fact table containing only records that pass all DQ checks.
+      Use for analytics. For a full picture including dirty records, join
+      back to int_requests_cleaned on unique_key.
+    columns:
+      - name: unique_key
+        tests:
+          - not_null
+          - unique
+      - name: created_at
+        tests:
+          - not_null
+      - name: response_time_hours
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 43800
+              row_condition: "response_time_hours is not null"
+
+  - name: dim_agency
+    description: "One row per agency code. Flags codes with inconsistent name spellings."
+    columns:
+      - name: agency_code
+        tests:
+          - not_null
+          - unique
+
+  - name: mart_dq_summary
+    description: >
+      Aggregate DQ report table. One row per DQ dimension, showing raw counts
+      and percentage of affected rows. Refreshes on every dbt run.

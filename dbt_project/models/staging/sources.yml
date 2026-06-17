@@ -1,0 +1,30 @@
+version: 2
+
+sources:
+  - name: raw
+    schema: raw
+    description: "Raw NYC 311 Service Requests loaded from Socrata API."
+    tables:
+      - name: service_requests
+        description: "One row per 311 complaint. All columns land as TEXT."
+        columns:
+          - name: unique_key
+            description: "Socrata-assigned unique identifier for each service request."
+          - name: created_date
+            description: "Date/time the complaint was created (ISO string)."
+          - name: closed_date
+            description: "Date/time the complaint was closed (ISO string). NULL if still open."
+          - name: agency
+            description: "Short code for the responsible city agency."
+          - name: agency_name
+            description: "Full name of the responsible city agency."
+          - name: complaint_type
+            description: "Category of the complaint."
+          - name: status
+            description: "Current status: Open, Closed, Pending, etc."
+          - name: borough
+            description: "NYC borough. 'Unspecified' when geocoding failed."
+          - name: latitude
+            description: "Geocoded latitude. May be 0.0 or NULL for ungeocodable addresses."
+          - name: longitude
+            description: "Geocoded longitude. May be 0.0 or NULL for ungeocodable addresses."

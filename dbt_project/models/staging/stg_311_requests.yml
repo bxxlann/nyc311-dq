@@ -1,0 +1,59 @@
+version: 2
+
+models:
+  - name: stg_311_requests
+    description: "Staged NYC 311 requests: type-cast, whitespace-trimmed, no business logic."
+    columns:
+      - name: unique_key
+        description: "Socrata unique identifier."
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_not_be_null:
+              row_condition: "status = 'CLOSED'"
+
+      - name: created_at
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: "'2010-01-01'::timestamptz"
+              max_value: "NOW()"
+
+      - name: agency_code
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_value_lengths_to_be_between:
+              min_value: 1
+              max_value: 10
+
+      - name: status
+        tests:
+          - not_null
+          - accepted_values:
+              values: ["OPEN", "CLOSED", "PENDING", "ASSIGNED", "IN PROGRESS",
+                       "STARTED", "DRAFT", "UNSPECIFIED"]
+
+      - name: borough
+        tests:
+          - not_null
+          - accepted_values:
+              values: ["MANHATTAN", "BROOKLYN", "QUEENS", "BRONX",
+                       "STATEN ISLAND", "UNSPECIFIED"]
+
+      - name: latitude
+        tests:
+          # Flags the known bad-geocoding sentinel value
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 40.4
+              max_value: 40.95
+              config:
+                severity: warn
+              row_condition: "latitude is not null"
+
+      - name: longitude
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: -74.26
+              max_value: -73.70
+              config:
+                severity: warn
+              row_condition: "longitude is not null"

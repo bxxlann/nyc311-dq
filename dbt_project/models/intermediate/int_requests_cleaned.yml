@@ -1,0 +1,31 @@
+version: 2
+
+models:
+  - name: int_requests_cleaned
+    description: >
+      Staged requests enriched with boolean DQ flags. No rows are dropped —
+      consumers choose how to filter. Rows failing multiple rules carry multiple flags.
+    columns:
+      - name: unique_key
+        tests:
+          - not_null
+          - unique
+
+      - name: is_timeline_inverted
+        description: "TRUE when closed_at < created_at — impossible sequence."
+        tests:
+          - not_null
+
+      - name: is_geocoding_failed
+        description: "TRUE when lat/lon is null, zero, or outside NYC bounding box."
+        tests:
+          - not_null
+
+      - name: response_time_hours
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 43800   # ~5 years ceiling
+              config:
+                severity: warn
+              row_condition: "response_time_hours is not null"
